@@ -1,0 +1,9 @@
+customtkinter==5.2.2
+Pillow
+SpeechRecognition
+pyaudio
+opencv-python
+mediapipe
+scikit-learn
+numpy==1.26.4
+matplotlib

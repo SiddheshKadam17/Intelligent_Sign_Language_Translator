@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pkl
+*.db
+*.log
+*.gif
+*.zip
+speechtosign/Indian/
+speechtosign/letters/
+speechtosign/enhanced_app/assets/sign_gifs/
+exports/
