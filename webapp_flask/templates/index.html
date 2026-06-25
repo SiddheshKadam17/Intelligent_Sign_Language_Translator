@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignTalk Pro — Voice to Sign Language Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+</head>
+<body>
+
+    <!-- ═══════════════════════ AUTH SCREEN ═══════════════════════ -->
+    <div class="auth-shell" id="auth-shell">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <span class="brand-icon">🤟</span>
+                <div class="brand-title">SignTalk Pro</div>
+                <div class="brand-subtitle">Sign Language Translator</div>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="auth-tab-login" data-form="login">Login</button>
+                <button class="auth-tab" id="auth-tab-register" data-form="register">Register</button>
+            </div>
+
+            <form class="auth-form active" id="form-login">
+                <label class="auth-label">Username</label>
+                <input type="text" class="auth-input" id="login-username" autocomplete="username" required>
+                <label class="auth-label">Password</label>
+                <input type="password" class="auth-input" id="login-password" autocomplete="current-password" required>
+                <div class="auth-error" id="login-error"></div>
+                <button type="submit" class="btn-primary btn-block">Log In</button>
+            </form>
+
+            <form class="auth-form" id="form-register">
+                <label class="auth-label">Choose a username</label>
+                <input type="text" class="auth-input" id="register-username" autocomplete="username" required minlength="3">
+                <label class="auth-label">Choose a password</label>
+                <input type="password" class="auth-input" id="register-password" autocomplete="new-password" required minlength="4">
+                <div class="auth-error" id="register-error"></div>
+                <button type="submit" class="btn-primary btn-block">Create Account</button>
+            </form>
+
+            <button class="auth-guest-btn" id="btn-guest">Continue as Guest</button>
+            <p class="auth-guest-note">Guests can translate, but History, Favorites, Achievements and Settings won't be saved.</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════ APP SHELL ═══════════════════════ -->
+    <div class="app-shell" id="app-shell" style="display:none;">
+
+        <!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-icon">🤟</span>
+                <div class="brand-text">
+                    <div class="brand-title">SignTalk Pro</div>
+                    <div class="brand-subtitle">Sign Language Translator</div>
+                </div>
+            </div>
+
+            <div class="user-card" id="user-card-btn">
+                <div class="avatar" id="sidebar-avatar">G</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-username">Guest User</div>
+                    <div class="user-status">● Online</div>
+                </div>
+            </div>
+
+            <div class="goal-card">
+                <div class="goal-top">
+                    <span>🎯 Daily Goal</span>
+                    <span id="goal-count">0/10</span>
+                </div>
+                <div class="goal-bar">
+                    <div class="goal-fill" id="goal-fill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="nav-section-label">MENU</div>
+            <nav class="nav-list">
+                <button class="nav-item active" data-tab="translator">
+                    <span class="nav-icon">🎙️</span> Translator
+                </button>
+                <button class="nav-item" data-tab="history">
+                    <span class="nav-icon">📜</span> History
+                </button>
+                <button class="nav-item" data-tab="favorites">
+                    <span class="nav-icon">⭐</span> Favorites
+                </button>
+                <button class="nav-item" data-tab="quiz">
+                    <span class="nav-icon">🧠</span> Practice Quiz
+                </button>
+                <button class="nav-item" data-tab="achievements">
+                    <span class="nav-icon">🏆</span> Achievements
+                </button>
+                <button class="nav-item" data-tab="profile">
+                    <span class="nav-icon">👤</span> Profile
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <span class="nav-icon">⚙️</span> Settings
+                </button>
+            </nav>
+
+            <div class="divider"></div>
+            <div class="nav-section-label">THEME</div>
+            <div class="theme-dots">
+                <button class="dot dot-blue active" data-color="#3b82f6"></button>
+                <button class="dot dot-green" data-color="#10b981"></button>
+                <button class="dot dot-purple" data-color="#a78bfa"></button>
+                <button class="dot dot-orange" data-color="#fb923c"></button>
+            </div>
+
+            <div class="sidebar-bottom">
+                <button class="btn-logout" id="btn-logout">⏻ Log Out</button>
+                <div class="team-credit">
+                    GSMCOE Pune<br>
+                    Team SignTalk Pro
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+        <main class="main-content">
+
+            <!-- ── TRANSLATOR TAB ──────────────────────────────────────── -->
+            <section class="tab-panel active" id="tab-translator">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Sign Language Translator</h1>
+                        <p class="subtitle">Type or speak — see it in signs instantly</p>
+                    </div>
+                    <div class="page-header-right">
+                        <div class="mode-pill">
+                            <button class="mode-btn active" id="btn-isl" data-mode="ISL">🇮🇳 ISL</button>
+                            <button class="mode-btn" id="btn-asl" data-mode="ASL">🇺🇸 ASL</button>
+                        </div>
+                        <div class="stat-chip">📊 <span id="stat-count">0</span> translations</div>
+                    </div>
+                </div>
+
+                <div class="translator-body">
+
+                    <!-- LEFT PANEL -->
+                    <div class="panel left-panel">
+                        <div class="panel-row">
+                            <span class="panel-label">📝 Text Input</span>
+                            <button class="link-btn" id="btn-clear-text">Clear</button>
+                        </div>
+                        <textarea id="text-input" placeholder="Type a word or sentence, or use the mic..." rows="5"></textarea>
+
+                        <div class="input-row">
+                            <button class="btn-primary" id="btn-translate">▶ Translate to Signs</button>
+                            <button class="btn-icon btn-mic" id="btn-mic" title="Voice input">🎤</button>
+                        </div>
+                        <div class="mic-status" id="mic-status"></div>
+
+                        <div class="speed-card">
+                            <div class="speed-top">
+                                <span>⚡ Animation Speed</span>
+                                <span id="speed-value">1.0s</span>
+                            </div>
+                            <input type="range" id="speed-slider" min="0.3" max="2.5" step="0.1" value="1.0">
+                        </div>
+
+                        <div class="action-row">
+                            <button class="btn-stop" id="btn-stop">⏹ Stop</button>
+                            <button class="btn-icon btn-star" id="btn-favorite" title="Save to favorites">⭐</button>
+                            <button class="btn-icon btn-gif" id="btn-gif" title="Export as GIF">🎞️</button>
+                        </div>
+                        <div class="gif-status" id="gif-status"></div>
+                    </div>
+
+                    <!-- RIGHT PANEL -->
+                    <div class="panel right-panel">
+                        <div class="panel-row">
+                            <span class="panel-label">🤟 Sign Display</span>
+                            <span class="status-dot" id="status-indicator">● Ready</span>
+                        </div>
+
+                        <div class="sign-display" id="sign-display">
+                            <div class="sign-placeholder" id="sign-placeholder">
+                                <div class="placeholder-icon">👋</div>
+                                <div class="placeholder-text">Ready to translate</div>
+                                <div class="placeholder-sub">Type text on the left and click Translate</div>
+                            </div>
+                            <img id="sign-image" class="sign-image" style="display:none;" crossorigin="anonymous">
+                            <div class="sign-letter" id="sign-letter"></div>
+                        </div>
+
+                        <div class="progress-row" id="progress-row" style="display:none;">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-caption" id="progress-caption"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── HISTORY TAB ──────────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-history">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Translation History</h1>
+                        <p class="subtitle">All your past sign language translations</p>
+                    </div>
+                    <button class="link-btn" id="btn-clear-history">Clear All</button>
+                </div>
+                <div class="list-card" id="history-list">
+                    <div class="empty-state">No translations yet — go try the Translator!</div>
+                </div>
+            </section>
+
+            <!-- ── FAVORITES TAB ────────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-favorites">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Favorites</h1>
+                        <p class="subtitle">Your saved phrases for quick access</p>
+                    </div>
+                </div>
+                <div class="list-card" id="favorites-list">
+                    <div class="empty-state">No favorites saved yet.</div>
+                </div>
+            </section>
+
+            <!-- ── QUIZ TAB ─────────────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-quiz">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Practice Quiz</h1>
+                        <p class="subtitle">Guess the letter from the sign — test yourself!</p>
+                    </div>
+                    <div class="mode-pill">
+                        <button class="mode-btn active" id="quiz-btn-isl" data-mode="ISL">🇮🇳 ISL</button>
+                        <button class="mode-btn" id="quiz-btn-asl" data-mode="ASL">🇺🇸 ASL</button>
+                    </div>
+                </div>
+
+                <div class="panel quiz-panel" id="quiz-panel">
+                    <div class="quiz-start" id="quiz-start">
+                        <div class="placeholder-icon">🧠</div>
+                        <div class="placeholder-text">Ready to test your knowledge?</div>
+                        <p class="placeholder-sub">10 questions, multiple choice. No accuracy tracking — just your score!</p>
+                        <button class="btn-primary" id="btn-quiz-start">▶ Start Quiz</button>
+                    </div>
+
+                    <div class="quiz-active" id="quiz-active" style="display:none;">
+                        <div class="quiz-top">
+                            <span id="quiz-progress">Question 1 of 10</span>
+                            <span class="badge" id="quiz-score">Score: 0</span>
+                        </div>
+                        <div class="quiz-image-box">
+                            <img id="quiz-image" class="quiz-image">
+                        </div>
+                        <div class="quiz-options" id="quiz-options"></div>
+                        <div class="quiz-feedback" id="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-result" id="quiz-result" style="display:none;">
+                        <div class="placeholder-icon" id="quiz-result-icon">🎉</div>
+                        <div class="placeholder-text" id="quiz-result-text">Quiz Complete!</div>
+                        <div class="quiz-final-score" id="quiz-final-score">Score: 0 / 10</div>
+                        <button class="btn-primary" id="btn-quiz-again">🔄 Try Again</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── ACHIEVEMENTS TAB ─────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-achievements">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Achievements</h1>
+                        <p class="subtitle">Badges you've earned along the way</p>
+                    </div>
+                </div>
+                <div class="achievements-grid" id="achievements-grid">
+                    <div class="empty-state">Log in to start earning achievements!</div>
+                </div>
+            </section>
+
+            <!-- ── PROFILE TAB ──────────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-profile">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Profile</h1>
+                        <p class="subtitle">Your account and stats</p>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-avatar" id="profile-avatar">G</div>
+                    <div class="profile-name" id="profile-name">Guest User</div>
+                    <div class="profile-since" id="profile-since"></div>
+                </div>
+
+                <div class="stats-grid" id="profile-stats">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">📜</div>
+                        <div class="stat-card-value" id="stat-history">0</div>
+                        <div class="stat-card-label">Translations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⭐</div>
+                        <div class="stat-card-value" id="stat-favorites">0</div>
+                        <div class="stat-card-label">Favorites</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🧠</div>
+                        <div class="stat-card-value" id="stat-quizzes">0</div>
+                        <div class="stat-card-label">Quizzes Taken</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">💯</div>
+                        <div class="stat-card-value" id="stat-best-quiz">0</div>
+                        <div class="stat-card-label">Best Quiz Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🏆</div>
+                        <div class="stat-card-value" id="stat-achievements">0</div>
+                        <div class="stat-card-label">Achievements</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── SETTINGS TAB ─────────────────────────────────────────── -->
+            <section class="tab-panel" id="tab-settings">
+                <div class="page-header">
+                    <div class="page-header-left">
+                        <h1>Settings</h1>
+                        <p class="subtitle">Customize how SignTalk Pro works for you</p>
+                    </div>
+                </div>
+
+                <div class="panel settings-panel">
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-label">🔊 Sound Effects</div>
+                            <div class="settings-desc">Play a sound on translation complete</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-sound" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-label">🌐 Default Sign Mode</div>
+                            <div class="settings-desc">Mode selected when you open the app</div>
+                        </div>
+                        <div class="mode-pill">
+                            <button class="mode-btn active" id="setting-mode-isl" data-mode="ISL">ISL</button>
+                            <button class="mode-btn" id="setting-mode-asl" data-mode="ASL">ASL</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-row settings-row-col">
+                        <div>
+                            <div class="settings-label">⚡ Default Animation Speed</div>
+                            <div class="settings-desc">Used as the starting speed each visit</div>
+                        </div>
+                        <div class="speed-card" style="width:100%;">
+                            <div class="speed-top">
+                                <span>Speed</span>
+                                <span id="setting-speed-value">1.0s</span>
+                            </div>
+                            <input type="range" id="setting-speed-slider" min="0.3" max="2.5" step="0.1" value="1.0">
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-label">🌙 Dark Mode</div>
+                            <div class="settings-desc">SignTalk Pro is dark-themed by design</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-dark-mode" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary" id="btn-save-settings">💾 Save Settings</button>
+                    <div class="settings-saved-msg" id="settings-saved-msg"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
